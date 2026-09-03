@@ -1,0 +1,13 @@
+workflows:
+  android-apk:
+    name: Sürücü Takip APK
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+    scripts:
+      - name: Flutter pub get
+        script: flutter pub get
+      - name: APK oluştur
+        script: flutter build apk --debug
+    artifacts:
+      - build/app/outputs/flutter-apk/app-debug.apk
