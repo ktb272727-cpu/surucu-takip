@@ -2,12 +2,22 @@ workflows:
   android-apk:
     name: Sürücü Takip APK
     instance_type: mac_mini_m2
+
     environment:
       flutter: stable
+
     scripts:
-      - name: Flutter pub get
+      - name: Android projesini oluştur
+        script: flutter create --platforms=android .
+
+      - name: Logo klasörünü hazırla
+        script: mkdir -p assets && cp logo.png assets/logo.png
+
+      - name: Flutter paketlerini yükle
         script: flutter pub get
+
       - name: APK oluştur
         script: flutter build apk --debug
+
     artifacts:
       - build/app/outputs/flutter-apk/app-debug.apk
