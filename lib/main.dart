@@ -448,30 +448,31 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _showSavedMessage(String message) async {
     if (!mounted) return;
 
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF202020) : Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: gold, width: 1.5),
-        ),
-        content: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: isDark ? Colors.white : Colors.black,
-            fontWeight: FontWeight.w800,
+    final messenger = ScaffoldMessenger.of(context);
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          duration: const Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.green,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
-      ),
-    );
+      );
 
     await Future.delayed(const Duration(seconds: 1));
-
-    if (mounted && Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
+    if (mounted) {
+      messenger.hideCurrentSnackBar();
     }
   }
 
@@ -927,7 +928,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).brightness ==
                 Brightness.dark
-            ? const Color(0xFFD9D9D9)
+            ? const Color(0xFF202020)
             : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
@@ -1416,28 +1417,34 @@ class _AddTripScreenState extends State<AddTripScreen> {
               return SizedBox(
                 height: 38,
                 child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 11,
+                  style: ButtonStyle(
+                    padding: const WidgetStatePropertyAll(
+                      EdgeInsets.symmetric(horizontal: 11),
                     ),
-                    side: const BorderSide(
-                      color: gold,
+                    backgroundColor: WidgetStatePropertyAll(
+                      Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF202020)
+                          : Colors.white,
                     ),
-                    backgroundColor: Theme.of(context).brightness == Brightness.dark
-                        ? const Color(0xFF202020)
-                        : Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    foregroundColor: WidgetStatePropertyAll(
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : dark,
+                    ),
+                    side: const WidgetStatePropertyAll(
+                      BorderSide(color: gold),
+                    ),
+                    shape: WidgetStatePropertyAll(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
                     ),
                   ),
                   onPressed: () =>
                       _quickAmount(v.toDouble()),
                   child: Text(
                     '$v TL',
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : dark,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w800,
                     ),
                   ),
