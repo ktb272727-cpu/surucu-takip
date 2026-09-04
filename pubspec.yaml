@@ -1,7 +1,7 @@
 name: surucu_takip
 description: Sürücü Takip - taksi yolculuk ve borç takip uygulaması.
 publish_to: "none"
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.5.3
-
+  flutter_launcher_icons: ^0.14.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -20,3 +20,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logo.png
+    flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon.png"
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/icon.png"
