@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-String _date(DateTime d) {
+String _formatDate(DateTime d) {
   return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
 }
 
-String _time(DateTime d) {
+String _formatTime(DateTime d) {
   return '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
 }
 
-IconData _paymentIcon(String p) {
+IconData _getPaymentIcon(String p) {
   if (p == 'Nakit') return Icons.money;
   if (p == 'POS') return Icons.credit_card;
   if (p == 'IBAN') return Icons.account_balance_wallet;
@@ -18,6 +18,61 @@ IconData _paymentIcon(String p) {
 const gold = Color(0xFFFFC400);
 const dark = Color(0xFF111111);
 const lightBg = Color(0xFFF7F7F7);
+
+Widget _tripCard(
+  Trip t, {
+  required VoidCallback onEdit,
+  required VoidCallback onDelete,
+  required bool showDate,
+}) {
+  final isDark =
+      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+          Brightness.dark;
+
+  return Container(
+    margin: const EdgeInsets.only(bottom: 8),
+    decoration: BoxDecoration(
+      color: isDark ? const Color(0xFF202020) : Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: gold),
+    ),
+    child: ListTile(
+      leading: CircleAvatar(
+        backgroundColor: gold.withOpacity(.18),
+        child: Icon(_getPaymentIcon(t.payment), color: dark),
+      ),
+      title: Text(
+        '${t.amount.toStringAsFixed(2)} TL \u2022 ${t.payment}',
+        style: TextStyle(
+          color: isDark ? Colors.white : Colors.black,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+      subtitle: Text(
+        '${showDate ? '${_formatDate(t.createdAt)} • ' : ''}'
+        '${t.debtor != null ? 'Borçlu: ${t.debtor} • ' : ''}'
+        '${t.note != null ? 'Not: ${t.note} • ' : ''}'
+        '${_formatTime(t.createdAt)}',
+        style: TextStyle(
+          color: isDark ? Colors.white70 : Colors.black87,
+        ),
+      ),
+      trailing: Wrap(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, color: Colors.black),
+            onPressed: onEdit,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            onPressed: onDelete,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -244,6 +299,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  String driver = 'S\u00FCr\u00FCc\u00FC Ad\u0131';
+  String station = 'Durak Ad\u0131';
 
   @override
   void initState() {
@@ -252,6 +309,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _load() async {
+    driver = await Storage.loadDriver();
+    station = await Storage.loadStation();
 
     await Future.delayed(
       const Duration(seconds: 2),
@@ -287,7 +346,6 @@ class _SplashScreenState extends State<SplashScreen> {
                   'assets/logo.png',
                   width: 230,
                   height: 230,
-                ),
                 ),
               ],
             ),
@@ -646,7 +704,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : Icons.dark_mode_outlined,
                   'theme',
                 ),
-              ],
+                ],
               ),
             ),
           ),
@@ -875,7 +933,7 @@ class _HomeScreenState extends State<HomeScreen> {
           CircleAvatar(
             backgroundColor: color.withOpacity(.15),
             child: Icon(
-              _paymentIcon(title),
+              _getPaymentIcon(title),
               color: color,
             ),
           ),
@@ -884,7 +942,9 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text(
               title,
               style: TextStyle(
-                color: darkTheme ? Colors.white : Colors.black,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -901,31 +961,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  IconData _paymentIcon(String payment) {
-    switch (payment) {
-      case 'Nakit':
-        return Icons.payments_outlined;
-      case 'POS':
-        return Icons.credit_card_outlined;
-      case 'IBAN':
-        return Icons.account_balance_outlined;
-      case 'Bor\u00E7':
-        return Icons.account_balance_wallet_outlined;
-      default:
-        return Icons.payments_outlined;
-    }
-  }
 
-  String _date(DateTime d) {
-    return '${d.day.toString().padLeft(2, '0')}.'
-        '${d.month.toString().padLeft(2, '0')}.'
-        '${d.year}';
-  }
 
-  String _time(DateTime d) {
-    return '${d.hour.toString().padLeft(2, '0')}:'
-        '${d.minute.toString().padLeft(2, '0')}';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1132,12 +1169,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-  IconData _paymentIcon(String p) {
-  if (p == 'Nakit') return Icons.money_rounded;
-  if (p == 'POS') return Icons.credit_card_rounded;
-  if (p == 'IBAN') return Icons.account_balance_rounded;
-  return Icons.account_balance_wallet_rounded;
   }
 }
 
@@ -1381,9 +1412,14 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 height: 38,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: Theme.of(context).brightness == Brightness.dark
-                        ? const Color(0xFF202020)
-                        : Colors.white,
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF202020)
+                            : Colors.white,
+                    foregroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : dark,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 11,
                     ),
@@ -1661,23 +1697,6 @@ class _TripsScreenState extends State<TripsScreen> {
             ),
     );
   }
-  String _date(DateTime d) {
-  return '${d.day.toString().padLeft(2, '0')}.'
-      '${d.month.toString().padLeft(2, '0')}.'
-      '${d.year}';
-}
-
-String _time(DateTime d) {
-  return '${d.hour.toString().padLeft(2, '0')}:'
-      '${d.minute.toString().padLeft(2, '0')}';
-}
-
-IconData _paymentIcon(String p) {
-  if (p == 'Nakit') return Icons.money_rounded;
-  if (p == 'POS') return Icons.credit_card_rounded;
-  if (p == 'IBAN') return Icons.account_balance_rounded;
-  return Icons.account_balance_wallet_rounded;
-}
 }
 
 class HistoryScreen extends StatefulWidget {
@@ -1831,7 +1850,7 @@ class _HistoryScreenState
               color: Theme.of(context)
                           .brightness ==
                       Brightness.dark
-                  ? const Color(0xFFD9D9D9)
+                  ? const Color(0xFF202020)
                   : Colors.white,
               borderRadius:
                   BorderRadius.circular(16),
@@ -1847,9 +1866,11 @@ class _HistoryScreenState
                     DateTime.now(),
                   )
                       ? 'Bug\u00FCn'
-                      : _date(selected),
-                  style: const TextStyle(
-                    color: Colors.black,
+                      : _formatDate(selected),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
                   ),
@@ -1858,8 +1879,10 @@ class _HistoryScreenState
                 Text(
                   '${dayTrips.length} yolculuk \u2022 '
                   '${total.toStringAsFixed(2)} TL',
-                  style: const TextStyle(
-                    color: Colors.black,
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white70
+                        : Colors.black,
                   ),
                 ),
               ],
@@ -1888,57 +1911,6 @@ class _HistoryScreenState
       ),
     );
   }
-  Widget _tripCard(
-  Trip t, {
-  required VoidCallback onEdit,
-  required VoidCallback onDelete,
-  required bool showDate,
-}) {
-  final isDark =
-      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-          Brightness.dark;
-
-  return Container(
-    margin: const EdgeInsets.only(bottom: 8),
-    decoration: BoxDecoration(
-      color: isDark ? const Color(0xFFD9D9D9) : Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: gold),
-    ),
-    child: ListTile(
-      leading: CircleAvatar(
-        backgroundColor: gold.withOpacity(.18),
-        child: Icon(_paymentIcon(t.payment), color: dark),
-      ),
-      title: Text(
-        '${t.amount.toStringAsFixed(2)} TL \u2022 ${t.payment}',
-        style: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-      subtitle: Text(
-        '${showDate ? '${_date(t.createdAt)} \u2022 ' : ''}'
-        '${t.debtor != null ? 'Bor\u00E7lu: ${t.debtor} \u2022 ' : ''}'
-        '${t.note != null ? 'Not: ${t.note} \u2022 ' : ''}'
-        '${_time(t.createdAt)}',
-        style: const TextStyle(color: Colors.black87),
-      ),
-      trailing: Wrap(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined, color: Colors.black),
-            onPressed: onEdit,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: onDelete,
-          ),
-        ],
-      ),
-    ),
-  );
-}
 }
 class DebtsScreen extends StatefulWidget {
   final List<Trip> trips;
@@ -2094,8 +2066,8 @@ class _DebtsScreenState extends State<DebtsScreen> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            '${_date(t.createdAt)} \u2022 '
-                            '${_time(t.createdAt)}',
+                            '${_formatDate(t.createdAt)} \u2022 '
+                            '${_formatTime(t.createdAt)}',
                             style: const TextStyle(
                               color: Colors.black87,
                             ),
