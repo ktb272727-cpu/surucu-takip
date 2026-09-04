@@ -14,8 +14,7 @@ workflows:
       - name: Logo ve ikon klasörünü hazırla
         script: |
           mkdir -p assets
-          cp icon.png assets/logo.png
-          cp icon.png assets/icon.png
+          cp assets/icon.png assets/logo.png
 
       - name: Flutter paketlerini yükle
         script: |
@@ -27,7 +26,14 @@ workflows:
 
       - name: Uygulama adını Sürücü Takip yap
         script: |
-          sed -i 's/android:label="[^"]*"/android:label="Sürücü Takip"/' android/app/src/main/AndroidManifest.xml
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("android/app/src/main/AndroidManifest.xml")
+          s = p.read_text()
+          s = re.sub(r'android:label="[^"]*"', 'android:label="Sürücü Takip"', s, count=1)
+          p.write_text(s)
+          PY
 
       - name: APK oluştur
         script: |
