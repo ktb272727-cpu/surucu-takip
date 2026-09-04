@@ -1,7 +1,20 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+String _date(DateTime d) {
+  return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+}
 
+String _time(DateTime d) {
+  return '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+}
+
+IconData _paymentIcon(String p) {
+  if (p == 'Nakit') return Icons.money;
+  if (p == 'POS') return Icons.credit_card;
+  if (p == 'IBAN') return Icons.account_balance_wallet;
+  return Icons.account_balance_wallet;
+}
 const gold = Color(0xFFFFC400);
 const dark = Color(0xFF111111);
 const lightBg = Color(0xFFF7F7F7);
