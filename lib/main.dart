@@ -345,28 +345,6 @@ class _SplashScreenState extends State<SplashScreen> {
                   width: 230,
                   height: 230,
                 ),
-                Positioned(
-                  top: 72,
-                  child: Text(
-                    driver,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 61,
-                  child: Text(
-                    station,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
               ],
             ),
             const SizedBox(height: 18),
@@ -461,14 +439,39 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
 
     if (mounted && trip == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Yolculuk ba\u015Far\u0131yla kaydedildi. \u2705',
-          ),
-          duration: Duration(seconds: 1),
-        ),
+      await _showSavedMessage(
+        'Yolculuk ba\u015Far\u0131yla kaydedildi. \u2705',
       );
+    }
+  }
+
+  Future<void> _showSavedMessage(String message) async {
+    if (!mounted) return;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF202020) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: const BorderSide(color: gold, width: 1.5),
+        ),
+        content: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: isDark ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    if (mounted && Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
     }
   }
 
@@ -545,13 +548,8 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'S\u00FCr\u00FCc\u00FC Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
-          ),
-          duration: Duration(seconds: 1),
-        ),
+      await _showSavedMessage(
+        'S\u00FCr\u00FCc\u00FC Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
       );
     }
   }
@@ -629,13 +627,8 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Durak Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
-          ),
-          duration: Duration(seconds: 1),
-        ),
+      await _showSavedMessage(
+        'Durak Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
       );
     }
   }
@@ -661,10 +654,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
           child: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Container(
                   width: 45,
                   height: 5,
@@ -720,8 +712,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : Icons.dark_mode_outlined,
                   'theme',
                 ),
-                ],
-              ),
+              ],
             ),
           ),
         );
@@ -893,7 +884,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: darkTheme
-            ? const Color(0xFFD9D9D9)
+            ? const Color(0xFF202020)
             : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
@@ -906,8 +897,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.black87,
+            style: TextStyle(
+              color: darkTheme ? Colors.white : Colors.black87,
               fontSize: 12,
               fontWeight: FontWeight.w700,
             ),
@@ -916,7 +907,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             value,
             style: TextStyle(
-              color: valueColor ?? Colors.black,
+              color: valueColor ?? (darkTheme ? Colors.white : Colors.black),
               fontSize: 20,
               fontWeight: FontWeight.w900,
             ),
@@ -1432,6 +1423,9 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     side: const BorderSide(
                       color: gold,
                     ),
+                    backgroundColor: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF202020)
+                        : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -1440,8 +1434,10 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       _quickAmount(v.toDouble()),
                   child: Text(
                     '$v TL',
-                    style: const TextStyle(
-                      color: dark,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : dark,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
