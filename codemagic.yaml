@@ -10,11 +10,20 @@ workflows:
       - name: Android projesini oluştur
         script: flutter create --platforms=android .
 
-      - name: Logo klasörünü hazırla
-        script: mkdir -p assets && cp logo.png assets/logo.png
+      - name: Logo ve ikon klasörünü hazırla
+        script: |
+          mkdir -p assets
+          cp logo.png assets/logo.png
 
       - name: Flutter paketlerini yükle
         script: flutter pub get
+
+      - name: Uygulama ikonunu oluştur
+        script: dart run flutter_launcher_icons
+
+      - name: Uygulama adını Sürücü Takip yap
+        script: |
+          sed -i 's/android:label="[^"]*"/android:label="Sürücü Takip"/' android/app/src/main/AndroidManifest.xml
 
       - name: APK oluştur
         script: flutter build apk --debug
