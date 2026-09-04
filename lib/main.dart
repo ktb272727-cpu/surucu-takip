@@ -661,9 +661,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
           child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                 Container(
                   width: 45,
                   height: 5,
@@ -719,7 +720,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       : Icons.dark_mode_outlined,
                   'theme',
                 ),
-              ],
+                ],
+              ),
             ),
           ),
         );
