@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-String _date(DateTime d) {
+String _formatDate(DateTime d) {
   return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
 }
 
-String _time(DateTime d) {
+String _formatTime(DateTime d) {
   return '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
 }
 
-IconData _paymentIcon(String p) {
+IconData _getPaymentIcon(String p) {
   if (p == 'Nakit') return Icons.money;
   if (p == 'POS') return Icons.credit_card;
   if (p == 'IBAN') return Icons.account_balance_wallet;
@@ -39,7 +39,7 @@ Widget _tripCard(
     child: ListTile(
       leading: CircleAvatar(
         backgroundColor: gold.withOpacity(.18),
-        child: Icon(_paymentIcon(t.payment), color: dark),
+        child: Icon(_getPaymentIcon(t.payment), color: dark),
       ),
       title: Text(
         '${t.amount.toStringAsFixed(2)} TL â€¢ ${t.payment}',
@@ -49,10 +49,10 @@ Widget _tripCard(
         ),
       ),
       subtitle: Text(
-        '${showDate ? '${_date(t.createdAt)} â€¢ ' : ''}'
+        '${showDate ? '${_formatDate(t.createdAt)} â€¢ ' : ''}'
         '${t.debtor != null ? 'BorÃ§lu: ${t.debtor} â€¢ ' : ''}'
         '${t.note != null ? 'Not: ${t.note} â€¢ ' : ''}'
-        '${_time(t.createdAt)}',
+        '${_formatTime(t.createdAt)}',
         style: const TextStyle(color: Colors.black87),
       ),
       trailing: Wrap(
@@ -952,7 +952,7 @@ class _HomeScreenState extends State<HomeScreen> {
           CircleAvatar(
             backgroundColor: color.withOpacity(.15),
             child: Icon(
-              _paymentIcon(title),
+              _getPaymentIcon(title),
               color: color,
             ),
           ),
@@ -1873,7 +1873,7 @@ class _HistoryScreenState
                     DateTime.now(),
                   )
                       ? 'BugÃ¼n'
-                      : _date(selected),
+                      : _formatDate(selected),
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 18,
@@ -2069,8 +2069,8 @@ class _DebtsScreenState extends State<DebtsScreen> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            '${_date(t.createdAt)} â€¢ '
-                            '${_time(t.createdAt)}',
+                            '${_formatDate(t.createdAt)} â€¢ '
+                            '${_formatTime(t.createdAt)}',
                             style: const TextStyle(
                               color: Colors.black87,
                             ),
