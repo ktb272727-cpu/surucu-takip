@@ -42,7 +42,7 @@ Widget _tripCard(
         child: Icon(_getPaymentIcon(t.payment), color: dark),
       ),
       title: Text(
-        '${t.amount.toStringAsFixed(2)} TL â€¢ ${t.payment}',
+        '${t.amount.toStringAsFixed(2)} TL \u2022 ${t.payment}',
         style: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.w800,
@@ -142,7 +142,7 @@ class Storage {
 
   static Future<String> loadDriver() async {
     final p = await _p();
-    return p.getString(driverKey) ?? 'SÃ¼rÃ¼cÃ¼ AdÄ±';
+    return p.getString(driverKey) ?? 'S\u00FCr\u00FCc\u00FC Ad\u0131';
   }
 
   static Future<void> saveDriver(String name) async {
@@ -152,7 +152,7 @@ class Storage {
 
   static Future<String> loadStation() async {
     final p = await _p();
-    return p.getString(stationKey) ?? 'Durak AdÄ±';
+    return p.getString(stationKey) ?? 'Durak Ad\u0131';
   }
 
   static Future<void> saveStation(String name) async {
@@ -205,21 +205,9 @@ class _SurucuTakipAppState extends State<SurucuTakipApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!loaded) {
-      return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          backgroundColor: Colors.black,
-          body: Center(
-            child: CircularProgressIndicator(color: gold),
-          ),
-        ),
-      );
-    }
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'SÃ¼rÃ¼cÃ¼ Takip',
+      title: 'S\u00FCr\u00FCc\u00FC Takip',
       themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
       theme: ThemeData(
         useMaterial3: true,
@@ -279,12 +267,19 @@ class _SurucuTakipAppState extends State<SurucuTakipApp> {
           ),
         ),
       ),
-      home: SplashScreen(
-        onFinished: () => HomeScreen(
-          darkMode: darkMode,
-          onThemeChanged: _toggleTheme,
-        ),
-      ),
+      home: loaded
+          ? SplashScreen(
+              onFinished: () => HomeScreen(
+                darkMode: darkMode,
+                onThemeChanged: _toggleTheme,
+              ),
+            )
+          : const Scaffold(
+              backgroundColor: Colors.black,
+              body: Center(
+                child: CircularProgressIndicator(color: gold),
+              ),
+            ),
     );
   }
 }
@@ -302,8 +297,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  String driver = 'SÃ¼rÃ¼cÃ¼ AdÄ±';
-  String station = 'Durak AdÄ±';
+  String driver = 'S\u00FCr\u00FCc\u00FC Ad\u0131';
+  String station = 'Durak Ad\u0131';
 
   @override
   void initState() {
@@ -406,8 +401,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Trip> trips = [];
-  String driver = 'SÃ¼rÃ¼cÃ¼ AdÄ±';
-  String station = 'Durak AdÄ±';
+  String driver = 'S\u00FCr\u00FCc\u00FC Ad\u0131';
+  String station = 'Durak Ad\u0131';
 
   bool get isDark =>
       Theme.of(context).brightness == Brightness.dark;
@@ -469,7 +464,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Yolculuk baÅŸarÄ±yla kaydedildi. âœ…',
+            'Yolculuk ba\u015Far\u0131yla kaydedildi. \u2705',
           ),
           duration: Duration(seconds: 1),
         ),
@@ -479,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _changeDriver() async {
     final controller = TextEditingController(
-      text: driver == 'SÃ¼rÃ¼cÃ¼ AdÄ±' ? '' : driver,
+      text: driver == 'S\u00FCr\u00FCc\u00FC Ad\u0131' ? '' : driver,
     );
 
     final name = await showDialog<String>(
@@ -495,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         title: Text(
-          'SÃ¼rÃ¼cÃ¼ adÄ±nÄ± deÄŸiÅŸtir',
+          'S\u00FCr\u00FCc\u00FC ad\u0131n\u0131 de\u011Fi\u015Ftir',
           style: TextStyle(
             color:
                 isDark ? Colors.white : Colors.black,
@@ -511,7 +506,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 isDark ? Colors.white : Colors.black,
           ),
           decoration: const InputDecoration(
-            labelText: 'SÃ¼rÃ¼cÃ¼ adÄ±',
+            labelText: 'S\u00FCr\u00FCc\u00FC ad\u0131',
           ),
         ),
         actions: [
@@ -519,7 +514,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () =>
                 Navigator.pop(dialogContext),
             child: Text(
-              'Ä°ptal Et',
+              '\u0130ptal Et',
               style: TextStyle(
                 color: isDark
                     ? Colors.white
@@ -553,7 +548,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'SÃ¼rÃ¼cÃ¼ AdÄ± baÅŸarÄ±yla deÄŸiÅŸtirilmiÅŸtir. âœ…',
+            'S\u00FCr\u00FCc\u00FC Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
           ),
           duration: Duration(seconds: 1),
         ),
@@ -563,7 +558,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _changeStation() async {
     final controller = TextEditingController(
-      text: station == 'Durak AdÄ±' ? '' : station,
+      text: station == 'Durak Ad\u0131' ? '' : station,
     );
 
     final name = await showDialog<String>(
@@ -579,7 +574,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         title: Text(
-          'Durak adÄ±nÄ± deÄŸiÅŸtir',
+          'Durak ad\u0131n\u0131 de\u011Fi\u015Ftir',
           style: TextStyle(
             color:
                 isDark ? Colors.white : Colors.black,
@@ -595,7 +590,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 isDark ? Colors.white : Colors.black,
           ),
           decoration: const InputDecoration(
-            labelText: 'Durak adÄ±',
+            labelText: 'Durak ad\u0131',
           ),
         ),
         actions: [
@@ -603,7 +598,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () =>
                 Navigator.pop(dialogContext),
             child: Text(
-              'Ä°ptal Et',
+              '\u0130ptal Et',
               style: TextStyle(
                 color: isDark
                     ? Colors.white
@@ -637,7 +632,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Durak AdÄ± baÅŸarÄ±yla deÄŸiÅŸtirilmiÅŸtir. âœ…',
+            'Durak Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
           ),
           duration: Duration(seconds: 1),
         ),
@@ -680,45 +675,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 16),
                 _menuButton(
                   sheetContext,
-                  'SÃ¼rÃ¼cÃ¼ adÄ±nÄ± deÄŸiÅŸtir',
+                  'S\u00FCr\u00FCc\u00FC ad\u0131n\u0131 de\u011Fi\u015Ftir',
                   Icons.person_outline,
                   'driver',
                 ),
                 _menuButton(
                   sheetContext,
-                  'Durak adÄ±nÄ± deÄŸiÅŸtir',
+                  'Durak ad\u0131n\u0131 de\u011Fi\u015Ftir',
                   Icons.location_on_outlined,
                   'station',
                 ),
                 _menuButton(
                   sheetContext,
-                  'YolculuklarÄ± dÃ¼zenle / sil',
+                  'Yolculuklar\u0131 d\u00FCzenle / sil',
                   Icons.edit_note_outlined,
                   'trips',
                 ),
                 _menuButton(
                   sheetContext,
-                  'BorÃ§lar',
+                  'Bor\u00E7lar',
                   Icons.account_balance_wallet_outlined,
                   'debts',
                 ),
                 _menuButton(
                   sheetContext,
-                  'GeÃ§miÅŸ KayÄ±tlar',
+                  'Ge\u00E7mi\u015F Kay\u0131tlar',
                   Icons.history,
                   'history',
                 ),
                 _menuButton(
                   sheetContext,
-                  'HakkÄ±nda',
+                  'Hakk\u0131nda',
                   Icons.info_outline,
                   'about',
                 ),
                 _menuButton(
                   sheetContext,
                   darkTheme
-                      ? 'Tema : AydÄ±nlÄ±k'
-                      : 'Tema : KaranlÄ±k',
+                      ? 'Tema : Ayd\u0131nl\u0131k'
+                      : 'Tema : Karanl\u0131k',
                   darkTheme
                       ? Icons.light_mode_outlined
                       : Icons.dark_mode_outlined,
@@ -858,15 +853,15 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           title: const Text(
-            'SÃ¼rÃ¼cÃ¼ Takip',
+            'S\u00FCr\u00FCc\u00FC Takip',
             style: TextStyle(
               fontWeight: FontWeight.w900,
             ),
           ),
           content: const Text(
-            'SÃ¼rÃ¼m 1.1.0\n\n'
-            'Bu uygulama Kerem BAYAR tarafÄ±ndan Ã¼retilmiÅŸtir.\n'
-            'Bizi tercih ettiÄŸiniz iÃ§in teÅŸekkÃ¼r ederiz.',
+            'S\u00FCr\u00FCm 1.1.0\n\n'
+            'Bu uygulama Kerem BAYAR taraf\u0131ndan \u00FCretilmi\u015Ftir.\n'
+            'Bizi tercih etti\u011Finiz i\u00E7in te\u015Fekk\u00FCr ederiz.',
           ),
           actions: [
             FilledButton(
@@ -1006,7 +1001,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .fold(0.0, (sum, t) => sum + t.amount);
 
     final debt = trips
-        .where((t) => t.payment == 'BorÃ§' && !t.paid)
+        .where((t) => t.payment == 'Bor\u00E7' && !t.paid)
         .fold(0.0, (sum, t) => sum + t.amount);
 
     return Scaffold(
@@ -1094,7 +1089,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 9),
 
               _summaryCard(
-                'Toplam KazanÃ§',
+                'Toplam Kazan\u00E7',
                 '${totalEarnings.toStringAsFixed(2)} TL',
               ),
 
@@ -1125,7 +1120,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 9),
 
               _summaryCard(
-                'BorÃ§',
+                'Bor\u00E7',
                 '${debt.toStringAsFixed(2)} TL',
                 valueColor: Colors.red,
               ),
@@ -1133,7 +1128,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
 
               const Text(
-                'BugÃ¼nkÃ¼ Yolculuklar',
+                'Bug\u00FCnk\u00FC Yolculuklar',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
@@ -1157,7 +1152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: const Center(
                     child: Text(
-                      'BugÃ¼n henÃ¼z yolculuk kaydÄ± yok.',
+                      'Bug\u00FCn hen\u00FCz yolculuk kayd\u0131 yok.',
                     ),
                   ),
                 )
@@ -1251,19 +1246,19 @@ class _AddTripScreenState extends State<AddTripScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'LÃ¼tfen geÃ§erli bir tutar girin.',
+            'L\u00FCtfen ge\u00E7erli bir tutar girin.',
           ),
         ),
       );
       return;
     }
 
-    if (payment == 'BorÃ§' &&
+    if (payment == 'Bor\u00E7' &&
         debtor.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'LÃ¼tfen borÃ§lu adÄ±nÄ± girin.',
+            'L\u00FCtfen bor\u00E7lu ad\u0131n\u0131 girin.',
           ),
         ),
       );
@@ -1288,7 +1283,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
             ),
           ),
           title: const Text(
-            'KaydÄ± onaylÄ±yor musunuz?',
+            'Kayd\u0131 onayl\u0131yor musunuz?',
             style: TextStyle(
               fontWeight: FontWeight.w900,
             ),
@@ -1302,11 +1297,11 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 'Tutar: ${value.toStringAsFixed(2)} TL',
               ),
               Text(
-                'Ã–deme: $payment',
+                '\u00D6deme: $payment',
               ),
-              if (payment == 'BorÃ§')
+              if (payment == 'Bor\u00E7')
                 Text(
-                  'BorÃ§lu: ${debtor.text.trim()}',
+                  'Bor\u00E7lu: ${debtor.text.trim()}',
                 ),
             ],
           ),
@@ -1318,7 +1313,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 false,
               ),
               child: Text(
-                'Ä°ptal Et',
+                '\u0130ptal Et',
                 style: TextStyle(
                   color: darkTheme
                       ? Colors.white
@@ -1358,7 +1353,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 .toString(),
         amount: value,
         payment: payment,
-        debtor: payment == 'BorÃ§'
+        debtor: payment == 'Bor\u00E7'
             ? debtor.text.trim()
             : null,
         note: note.text.trim().isEmpty
@@ -1399,7 +1394,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
         title: Text(
           widget.trip == null
               ? 'Yeni Yolculuk'
-              : 'YolculuÄŸu DÃ¼zenle',
+              : 'Yolculu\u011Fu D\u00FCzenle',
         ),
       ),
       body: ListView(
@@ -1454,7 +1449,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Ã–deme yÃ¶ntemi',
+            '\u00D6deme y\u00F6ntemi',
             style: TextStyle(
               fontWeight: FontWeight.w800,
             ),
@@ -1467,7 +1462,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
               'Nakit',
               'POS',
               'IBAN',
-              'BorÃ§',
+              'Bor\u00E7',
             ].map((p) {
               final selected = payment == p;
 
@@ -1500,14 +1495,14 @@ class _AddTripScreenState extends State<AddTripScreen> {
               );
             }).toList(),
           ),
-          if (payment == 'BorÃ§') ...[
+          if (payment == 'Bor\u00E7') ...[
             const SizedBox(height: 18),
             TextField(
               controller: debtor,
               textCapitalization:
                   TextCapitalization.words,
               decoration: const InputDecoration(
-                labelText: 'BorÃ§lu adÄ±',
+                labelText: 'Bor\u00E7lu ad\u0131',
                 prefixIcon: Icon(
                   Icons.person_outline,
                 ),
@@ -1519,7 +1514,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
             controller: note,
             maxLines: 3,
             decoration: const InputDecoration(
-              labelText: 'Not (isteÄŸe baÄŸlÄ±)',
+              labelText: 'Not (iste\u011Fe ba\u011Fl\u0131)',
               prefixIcon: Icon(
                 Icons.notes_outlined,
               ),
@@ -1593,7 +1588,7 @@ class _TripsScreenState extends State<TripsScreen> {
             'Yolculuk silinsin mi?',
           ),
           content: const Text(
-            'Bu kayÄ±t kalÄ±cÄ± olarak silinecek.',
+            'Bu kay\u0131t kal\u0131c\u0131 olarak silinecek.',
           ),
           actions: [
             TextButton(
@@ -1602,7 +1597,7 @@ class _TripsScreenState extends State<TripsScreen> {
                 dialogContext,
                 false,
               ),
-              child: const Text('Ä°ptal'),
+              child: const Text('\u0130ptal'),
             ),
             FilledButton(
               onPressed: () =>
@@ -1678,13 +1673,13 @@ class _TripsScreenState extends State<TripsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'YolculuklarÄ± dÃ¼zenle / sil',
+          'Yolculuklar\u0131 d\u00FCzenle / sil',
         ),
       ),
       body: list.isEmpty
           ? const Center(
               child: Text(
-                'BugÃ¼n kayÄ±t bulunmuyor.',
+                'Bug\u00FCn kay\u0131t bulunmuyor.',
               ),
             )
           : ListView.builder(
@@ -1786,13 +1781,13 @@ class _HistoryScreenState
           'Yolculuk silinsin mi?',
         ),
         content: const Text(
-          'Bu kayÄ±t kalÄ±cÄ± olarak silinecek.',
+          'Bu kay\u0131t kal\u0131c\u0131 olarak silinecek.',
         ),
         actions: [
           TextButton(
             onPressed: () =>
                 Navigator.pop(c, false),
-            child: const Text('Ä°ptal'),
+            child: const Text('\u0130ptal'),
           ),
           FilledButton(
             onPressed: () =>
@@ -1837,7 +1832,7 @@ class _HistoryScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'GeÃ§miÅŸ KayÄ±tlar',
+          'Ge\u00E7mi\u015F Kay\u0131tlar',
         ),
         actions: [
           IconButton(
@@ -1872,7 +1867,7 @@ class _HistoryScreenState
                     selected,
                     DateTime.now(),
                   )
-                      ? 'BugÃ¼n'
+                      ? 'Bug\u00FCn'
                       : _formatDate(selected),
                   style: const TextStyle(
                     color: Colors.black,
@@ -1882,7 +1877,7 @@ class _HistoryScreenState
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '${dayTrips.length} yolculuk â€¢ '
+                  '${dayTrips.length} yolculuk \u2022 '
                   '${total.toStringAsFixed(2)} TL',
                   style: const TextStyle(
                     color: Colors.black,
@@ -1897,7 +1892,7 @@ class _HistoryScreenState
               padding: EdgeInsets.all(30),
               child: Center(
                 child: Text(
-                  'Bu tarihte kayÄ±t bulunmuyor.',
+                  'Bu tarihte kay\u0131t bulunmuyor.',
                 ),
               ),
             )
@@ -1941,7 +1936,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
 
     debts = widget.trips
         .where(
-          (t) => t.payment == 'BorÃ§' && !t.paid,
+          (t) => t.payment == 'Bor\u00E7' && !t.paid,
         )
         .toList();
   }
@@ -1960,7 +1955,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
     setState(() {
       debts = widget.trips
           .where(
-            (x) => x.payment == 'BorÃ§' && !x.paid,
+            (x) => x.payment == 'Bor\u00E7' && !x.paid,
           )
           .toList();
     });
@@ -1984,7 +1979,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BorÃ§lar'),
+        title: const Text('Bor\u00E7lar'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(14),
@@ -1993,14 +1988,14 @@ class _DebtsScreenState extends State<DebtsScreen> {
             children: [
               Expanded(
                 child: _stat(
-                  'Aktif BorÃ§',
+                  'Aktif Bor\u00E7',
                   '${debts.length}',
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: _stat(
-                  'BorÃ§lu',
+                  'Bor\u00E7lu',
                   '$people',
                 ),
               ),
@@ -2019,7 +2014,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
               padding: EdgeInsets.all(30),
               child: Center(
                 child: Text(
-                  'Ã–denmemiÅŸ borÃ§ bulunmuyor.',
+                  '\u00D6denmemi\u015F bor\u00E7 bulunmuyor.',
                 ),
               ),
             )
@@ -2049,7 +2044,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
                         children: [
                           Text(
                             t.debtor ??
-                                'Ä°simsiz borÃ§',
+                                '\u0130simsiz bor\u00E7',
                             style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16,
@@ -2069,7 +2064,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            '${_formatDate(t.createdAt)} â€¢ '
+                            '${_formatDate(t.createdAt)} \u2022 '
                             '${_formatTime(t.createdAt)}',
                             style: const TextStyle(
                               color: Colors.black87,
@@ -2094,7 +2089,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
                       ),
                       onPressed: () => _paid(t),
                       child: const Text(
-                        'Ã–dendi',
+                        '\u00D6dendi',
                         style: TextStyle(
                           fontWeight:
                               FontWeight.w800,
