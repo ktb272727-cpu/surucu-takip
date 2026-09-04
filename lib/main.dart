@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-String _formatDate(DateTime d) {
+String _date(DateTime d) {
   return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
 }
 
-String _formatTime(DateTime d) {
+String _time(DateTime d) {
   return '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
 }
 
-IconData _getPaymentIcon(String p) {
+IconData _paymentIcon(String p) {
   if (p == 'Nakit') return Icons.money;
   if (p == 'POS') return Icons.credit_card;
   if (p == 'IBAN') return Icons.account_balance_wallet;
@@ -18,59 +18,6 @@ IconData _getPaymentIcon(String p) {
 const gold = Color(0xFFFFC400);
 const dark = Color(0xFF111111);
 const lightBg = Color(0xFFF7F7F7);
-
-Widget _tripCard(
-  Trip t, {
-  required VoidCallback onEdit,
-  required VoidCallback onDelete,
-  required bool showDate,
-}) {
-  final isDark =
-      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-          Brightness.dark;
-
-  return Container(
-    margin: const EdgeInsets.only(bottom: 8),
-    decoration: BoxDecoration(
-      color: isDark ? const Color(0xFFD9D9D9) : Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: gold),
-    ),
-    child: ListTile(
-      leading: CircleAvatar(
-        backgroundColor: gold.withOpacity(.18),
-        child: Icon(_getPaymentIcon(t.payment), color: dark),
-      ),
-      title: Text(
-        '${t.amount.toStringAsFixed(2)} TL \u2022 ${t.payment}',
-        style: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-      subtitle: Text(
-        '${showDate ? '${_formatDate(t.createdAt)} â€¢ ' : ''}'
-        '${t.debtor != null ? 'BorÃ§lu: ${t.debtor} â€¢ ' : ''}'
-        '${t.note != null ? 'Not: ${t.note} â€¢ ' : ''}'
-        '${_formatTime(t.createdAt)}',
-        style: const TextStyle(color: Colors.black87),
-      ),
-      trailing: Wrap(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined, color: Colors.black),
-            onPressed: onEdit,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: onDelete,
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -297,8 +244,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  String driver = 'S\u00FCr\u00FCc\u00FC Ad\u0131';
-  String station = 'Durak Ad\u0131';
 
   @override
   void initState() {
@@ -307,8 +252,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _load() async {
-    driver = await Storage.loadDriver();
-    station = await Storage.loadStation();
 
     await Future.delayed(
       const Duration(seconds: 2),
@@ -344,6 +287,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   'assets/logo.png',
                   width: 230,
                   height: 230,
+                ),
                 ),
               ],
             ),
@@ -439,40 +383,14 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
 
     if (mounted && trip == null) {
-      await _showSavedMessage(
-        'Yolculuk ba\u015Far\u0131yla kaydedildi. \u2705',
-      );
-    }
-  }
-
-  Future<void> _showSavedMessage(String message) async {
-    if (!mounted) return;
-
-    final messenger = ScaffoldMessenger.of(context);
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
           content: Text(
-            message,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontWeight: FontWeight.w800,
-            ),
+            'Yolculuk ba\u015Far\u0131yla kaydedildi. \u2705',
           ),
-          duration: const Duration(seconds: 1),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.green,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+          duration: Duration(seconds: 1),
         ),
       );
-
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      messenger.hideCurrentSnackBar();
     }
   }
 
@@ -549,8 +467,13 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
 
     if (mounted) {
-      await _showSavedMessage(
-        'S\u00FCr\u00FCc\u00FC Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'S\u00FCr\u00FCc\u00FC Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
+          ),
+          duration: Duration(seconds: 1),
+        ),
       );
     }
   }
@@ -628,8 +551,13 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
 
     if (mounted) {
-      await _showSavedMessage(
-        'Durak Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Durak Ad\u0131 ba\u015Far\u0131yla de\u011Fi\u015Ftirilmi\u015Ftir. \u2705',
+          ),
+          duration: Duration(seconds: 1),
+        ),
       );
     }
   }
@@ -655,9 +583,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
           child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(sheetContext).size.height * 0.82,
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                children: [
                 Container(
                   width: 45,
                   height: 5,
@@ -714,6 +647,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   'theme',
                 ),
               ],
+              ),
             ),
           ),
         );
@@ -899,7 +833,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             title,
             style: TextStyle(
-              color: darkTheme ? Colors.white : Colors.black87,
+              color: darkTheme ? Colors.white70 : Colors.black87,
               fontSize: 12,
               fontWeight: FontWeight.w700,
             ),
@@ -941,7 +875,7 @@ class _HomeScreenState extends State<HomeScreen> {
           CircleAvatar(
             backgroundColor: color.withOpacity(.15),
             child: Icon(
-              _getPaymentIcon(title),
+              _paymentIcon(title),
               color: color,
             ),
           ),
@@ -949,8 +883,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
-                color: Colors.black,
+              style: TextStyle(
+                color: darkTheme ? Colors.white : Colors.black,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -967,8 +901,31 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  IconData _paymentIcon(String payment) {
+    switch (payment) {
+      case 'Nakit':
+        return Icons.payments_outlined;
+      case 'POS':
+        return Icons.credit_card_outlined;
+      case 'IBAN':
+        return Icons.account_balance_outlined;
+      case 'Bor\u00E7':
+        return Icons.account_balance_wallet_outlined;
+      default:
+        return Icons.payments_outlined;
+    }
+  }
 
+  String _date(DateTime d) {
+    return '${d.day.toString().padLeft(2, '0')}.'
+        '${d.month.toString().padLeft(2, '0')}.'
+        '${d.year}';
+  }
 
+  String _time(DateTime d) {
+    return '${d.hour.toString().padLeft(2, '0')}:'
+        '${d.minute.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1175,6 +1132,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+  IconData _paymentIcon(String p) {
+  if (p == 'Nakit') return Icons.money_rounded;
+  if (p == 'POS') return Icons.credit_card_rounded;
+  if (p == 'IBAN') return Icons.account_balance_rounded;
+  return Icons.account_balance_wallet_rounded;
   }
 }
 
@@ -1417,34 +1380,28 @@ class _AddTripScreenState extends State<AddTripScreen> {
               return SizedBox(
                 height: 38,
                 child: OutlinedButton(
-                  style: ButtonStyle(
-                    padding: const WidgetStatePropertyAll(
-                      EdgeInsets.symmetric(horizontal: 11),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF202020)
+                        : Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 11,
                     ),
-                    backgroundColor: WidgetStatePropertyAll(
-                      Theme.of(context).brightness == Brightness.dark
-                          ? const Color(0xFF202020)
-                          : Colors.white,
+                    side: const BorderSide(
+                      color: gold,
                     ),
-                    foregroundColor: WidgetStatePropertyAll(
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : dark,
-                    ),
-                    side: const WidgetStatePropertyAll(
-                      BorderSide(color: gold),
-                    ),
-                    shape: WidgetStatePropertyAll(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   onPressed: () =>
                       _quickAmount(v.toDouble()),
                   child: Text(
                     '$v TL',
-                    style: const TextStyle(
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : dark,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -1704,6 +1661,23 @@ class _TripsScreenState extends State<TripsScreen> {
             ),
     );
   }
+  String _date(DateTime d) {
+  return '${d.day.toString().padLeft(2, '0')}.'
+      '${d.month.toString().padLeft(2, '0')}.'
+      '${d.year}';
+}
+
+String _time(DateTime d) {
+  return '${d.hour.toString().padLeft(2, '0')}:'
+      '${d.minute.toString().padLeft(2, '0')}';
+}
+
+IconData _paymentIcon(String p) {
+  if (p == 'Nakit') return Icons.money_rounded;
+  if (p == 'POS') return Icons.credit_card_rounded;
+  if (p == 'IBAN') return Icons.account_balance_rounded;
+  return Icons.account_balance_wallet_rounded;
+}
 }
 
 class HistoryScreen extends StatefulWidget {
@@ -1873,7 +1847,7 @@ class _HistoryScreenState
                     DateTime.now(),
                   )
                       ? 'Bug\u00FCn'
-                      : _formatDate(selected),
+                      : _date(selected),
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 18,
@@ -1914,6 +1888,57 @@ class _HistoryScreenState
       ),
     );
   }
+  Widget _tripCard(
+  Trip t, {
+  required VoidCallback onEdit,
+  required VoidCallback onDelete,
+  required bool showDate,
+}) {
+  final isDark =
+      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+          Brightness.dark;
+
+  return Container(
+    margin: const EdgeInsets.only(bottom: 8),
+    decoration: BoxDecoration(
+      color: isDark ? const Color(0xFFD9D9D9) : Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: gold),
+    ),
+    child: ListTile(
+      leading: CircleAvatar(
+        backgroundColor: gold.withOpacity(.18),
+        child: Icon(_paymentIcon(t.payment), color: dark),
+      ),
+      title: Text(
+        '${t.amount.toStringAsFixed(2)} TL \u2022 ${t.payment}',
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+      subtitle: Text(
+        '${showDate ? '${_date(t.createdAt)} \u2022 ' : ''}'
+        '${t.debtor != null ? 'Bor\u00E7lu: ${t.debtor} \u2022 ' : ''}'
+        '${t.note != null ? 'Not: ${t.note} \u2022 ' : ''}'
+        '${_time(t.createdAt)}',
+        style: const TextStyle(color: Colors.black87),
+      ),
+      trailing: Wrap(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, color: Colors.black),
+            onPressed: onEdit,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            onPressed: onDelete,
+          ),
+        ],
+      ),
+    ),
+  );
+}
 }
 class DebtsScreen extends StatefulWidget {
   final List<Trip> trips;
@@ -2069,8 +2094,8 @@ class _DebtsScreenState extends State<DebtsScreen> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            '${_formatDate(t.createdAt)} \u2022 '
-                            '${_formatTime(t.createdAt)}',
+                            '${_date(t.createdAt)} \u2022 '
+                            '${_time(t.createdAt)}',
                             style: const TextStyle(
                               color: Colors.black87,
                             ),
