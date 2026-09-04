@@ -19,6 +19,59 @@ const gold = Color(0xFFFFC400);
 const dark = Color(0xFF111111);
 const lightBg = Color(0xFFF7F7F7);
 
+Widget _tripCard(
+  Trip t, {
+  required VoidCallback onEdit,
+  required VoidCallback onDelete,
+  required bool showDate,
+}) {
+  final isDark =
+      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+          Brightness.dark;
+
+  return Container(
+    margin: const EdgeInsets.only(bottom: 8),
+    decoration: BoxDecoration(
+      color: isDark ? const Color(0xFFD9D9D9) : Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: gold),
+    ),
+    child: ListTile(
+      leading: CircleAvatar(
+        backgroundColor: gold.withOpacity(.18),
+        child: Icon(_paymentIcon(t.payment), color: dark),
+      ),
+      title: Text(
+        '${t.amount.toStringAsFixed(2)} TL â€¢ ${t.payment}',
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+      subtitle: Text(
+        '${showDate ? '${_date(t.createdAt)} â€¢ ' : ''}'
+        '${t.debtor != null ? 'BorÃ§lu: ${t.debtor} â€¢ ' : ''}'
+        '${t.note != null ? 'Not: ${t.note} â€¢ ' : ''}'
+        '${_time(t.createdAt)}',
+        style: const TextStyle(color: Colors.black87),
+      ),
+      trailing: Wrap(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, color: Colors.black),
+            onPressed: onEdit,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            onPressed: onDelete,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const SurucuTakipApp());
@@ -89,7 +142,7 @@ class Storage {
 
   static Future<String> loadDriver() async {
     final p = await _p();
-    return p.getString(driverKey) ?? 'Sürücü Adı';
+    return p.getString(driverKey) ?? 'SÃ¼rÃ¼cÃ¼ AdÄ±';
   }
 
   static Future<void> saveDriver(String name) async {
@@ -99,7 +152,7 @@ class Storage {
 
   static Future<String> loadStation() async {
     final p = await _p();
-    return p.getString(stationKey) ?? 'Durak Adı';
+    return p.getString(stationKey) ?? 'Durak AdÄ±';
   }
 
   static Future<void> saveStation(String name) async {
@@ -166,7 +219,7 @@ class _SurucuTakipAppState extends State<SurucuTakipApp> {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Sürücü Takip',
+      title: 'SÃ¼rÃ¼cÃ¼ Takip',
       themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
       theme: ThemeData(
         useMaterial3: true,
@@ -249,8 +302,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  String driver = 'Sürücü Adı';
-  String station = 'Durak Adı';
+  String driver = 'SÃ¼rÃ¼cÃ¼ AdÄ±';
+  String station = 'Durak AdÄ±';
 
   @override
   void initState() {
@@ -353,8 +406,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Trip> trips = [];
-  String driver = 'Sürücü Adı';
-  String station = 'Durak Adı';
+  String driver = 'SÃ¼rÃ¼cÃ¼ AdÄ±';
+  String station = 'Durak AdÄ±';
 
   bool get isDark =>
       Theme.of(context).brightness == Brightness.dark;
@@ -416,7 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Yolculuk başarıyla kaydedildi. ✅',
+            'Yolculuk baÅŸarÄ±yla kaydedildi. âœ…',
           ),
           duration: Duration(seconds: 1),
         ),
@@ -426,7 +479,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _changeDriver() async {
     final controller = TextEditingController(
-      text: driver == 'Sürücü Adı' ? '' : driver,
+      text: driver == 'SÃ¼rÃ¼cÃ¼ AdÄ±' ? '' : driver,
     );
 
     final name = await showDialog<String>(
@@ -442,7 +495,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         title: Text(
-          'Sürücü adını değiştir',
+          'SÃ¼rÃ¼cÃ¼ adÄ±nÄ± deÄŸiÅŸtir',
           style: TextStyle(
             color:
                 isDark ? Colors.white : Colors.black,
@@ -458,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 isDark ? Colors.white : Colors.black,
           ),
           decoration: const InputDecoration(
-            labelText: 'Sürücü adı',
+            labelText: 'SÃ¼rÃ¼cÃ¼ adÄ±',
           ),
         ),
         actions: [
@@ -466,7 +519,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () =>
                 Navigator.pop(dialogContext),
             child: Text(
-              'İptal Et',
+              'Ä°ptal Et',
               style: TextStyle(
                 color: isDark
                     ? Colors.white
@@ -500,7 +553,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Sürücü Adı başarıyla değiştirilmiştir. ✅',
+            'SÃ¼rÃ¼cÃ¼ AdÄ± baÅŸarÄ±yla deÄŸiÅŸtirilmiÅŸtir. âœ…',
           ),
           duration: Duration(seconds: 1),
         ),
@@ -510,7 +563,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _changeStation() async {
     final controller = TextEditingController(
-      text: station == 'Durak Adı' ? '' : station,
+      text: station == 'Durak AdÄ±' ? '' : station,
     );
 
     final name = await showDialog<String>(
@@ -526,7 +579,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         title: Text(
-          'Durak adını değiştir',
+          'Durak adÄ±nÄ± deÄŸiÅŸtir',
           style: TextStyle(
             color:
                 isDark ? Colors.white : Colors.black,
@@ -542,7 +595,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 isDark ? Colors.white : Colors.black,
           ),
           decoration: const InputDecoration(
-            labelText: 'Durak adı',
+            labelText: 'Durak adÄ±',
           ),
         ),
         actions: [
@@ -550,7 +603,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () =>
                 Navigator.pop(dialogContext),
             child: Text(
-              'İptal Et',
+              'Ä°ptal Et',
               style: TextStyle(
                 color: isDark
                     ? Colors.white
@@ -584,7 +637,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Durak Adı başarıyla değiştirilmiştir. ✅',
+            'Durak AdÄ± baÅŸarÄ±yla deÄŸiÅŸtirilmiÅŸtir. âœ…',
           ),
           duration: Duration(seconds: 1),
         ),
@@ -627,45 +680,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 16),
                 _menuButton(
                   sheetContext,
-                  'Sürücü adını değiştir',
+                  'SÃ¼rÃ¼cÃ¼ adÄ±nÄ± deÄŸiÅŸtir',
                   Icons.person_outline,
                   'driver',
                 ),
                 _menuButton(
                   sheetContext,
-                  'Durak adını değiştir',
+                  'Durak adÄ±nÄ± deÄŸiÅŸtir',
                   Icons.location_on_outlined,
                   'station',
                 ),
                 _menuButton(
                   sheetContext,
-                  'Yolculukları düzenle / sil',
+                  'YolculuklarÄ± dÃ¼zenle / sil',
                   Icons.edit_note_outlined,
                   'trips',
                 ),
                 _menuButton(
                   sheetContext,
-                  'Borçlar',
+                  'BorÃ§lar',
                   Icons.account_balance_wallet_outlined,
                   'debts',
                 ),
                 _menuButton(
                   sheetContext,
-                  'Geçmiş Kayıtlar',
+                  'GeÃ§miÅŸ KayÄ±tlar',
                   Icons.history,
                   'history',
                 ),
                 _menuButton(
                   sheetContext,
-                  'Hakkında',
+                  'HakkÄ±nda',
                   Icons.info_outline,
                   'about',
                 ),
                 _menuButton(
                   sheetContext,
                   darkTheme
-                      ? 'Tema : Aydınlık'
-                      : 'Tema : Karanlık',
+                      ? 'Tema : AydÄ±nlÄ±k'
+                      : 'Tema : KaranlÄ±k',
                   darkTheme
                       ? Icons.light_mode_outlined
                       : Icons.dark_mode_outlined,
@@ -805,15 +858,15 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           title: const Text(
-            'Sürücü Takip',
+            'SÃ¼rÃ¼cÃ¼ Takip',
             style: TextStyle(
               fontWeight: FontWeight.w900,
             ),
           ),
           content: const Text(
-            'Sürüm 1.1.0\n\n'
-            'Bu uygulama Kerem BAYAR tarafından üretilmiştir.\n'
-            'Bizi tercih ettiğiniz için teşekkür ederiz.',
+            'SÃ¼rÃ¼m 1.1.0\n\n'
+            'Bu uygulama Kerem BAYAR tarafÄ±ndan Ã¼retilmiÅŸtir.\n'
+            'Bizi tercih ettiÄŸiniz iÃ§in teÅŸekkÃ¼r ederiz.',
           ),
           actions: [
             FilledButton(
@@ -925,31 +978,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  IconData _paymentIcon(String payment) {
-    switch (payment) {
-      case 'Nakit':
-        return Icons.payments_outlined;
-      case 'POS':
-        return Icons.credit_card_outlined;
-      case 'IBAN':
-        return Icons.account_balance_outlined;
-      case 'Borç':
-        return Icons.account_balance_wallet_outlined;
-      default:
-        return Icons.payments_outlined;
-    }
-  }
 
-  String _date(DateTime d) {
-    return '${d.day.toString().padLeft(2, '0')}.'
-        '${d.month.toString().padLeft(2, '0')}.'
-        '${d.year}';
-  }
 
-  String _time(DateTime d) {
-    return '${d.hour.toString().padLeft(2, '0')}:'
-        '${d.minute.toString().padLeft(2, '0')}';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -976,7 +1006,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .fold(0.0, (sum, t) => sum + t.amount);
 
     final debt = trips
-        .where((t) => t.payment == 'Borç' && !t.paid)
+        .where((t) => t.payment == 'BorÃ§' && !t.paid)
         .fold(0.0, (sum, t) => sum + t.amount);
 
     return Scaffold(
@@ -1064,7 +1094,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 9),
 
               _summaryCard(
-                'Toplam Kazanç',
+                'Toplam KazanÃ§',
                 '${totalEarnings.toStringAsFixed(2)} TL',
               ),
 
@@ -1095,7 +1125,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 9),
 
               _summaryCard(
-                'Borç',
+                'BorÃ§',
                 '${debt.toStringAsFixed(2)} TL',
                 valueColor: Colors.red,
               ),
@@ -1103,7 +1133,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
 
               const Text(
-                'Bugünkü Yolculuklar',
+                'BugÃ¼nkÃ¼ Yolculuklar',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
@@ -1127,7 +1157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: const Center(
                     child: Text(
-                      'Bugün henüz yolculuk kaydı yok.',
+                      'BugÃ¼n henÃ¼z yolculuk kaydÄ± yok.',
                     ),
                   ),
                 )
@@ -1156,12 +1186,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-  IconData _paymentIcon(String p) {
-  if (p == 'Nakit') return Icons.money_rounded;
-  if (p == 'POS') return Icons.credit_card_rounded;
-  if (p == 'IBAN') return Icons.account_balance_rounded;
-  return Icons.account_balance_wallet_rounded;
   }
 }
 
@@ -1227,19 +1251,19 @@ class _AddTripScreenState extends State<AddTripScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Lütfen geçerli bir tutar girin.',
+            'LÃ¼tfen geÃ§erli bir tutar girin.',
           ),
         ),
       );
       return;
     }
 
-    if (payment == 'Borç' &&
+    if (payment == 'BorÃ§' &&
         debtor.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Lütfen borçlu adını girin.',
+            'LÃ¼tfen borÃ§lu adÄ±nÄ± girin.',
           ),
         ),
       );
@@ -1264,7 +1288,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
             ),
           ),
           title: const Text(
-            'Kaydı onaylıyor musunuz?',
+            'KaydÄ± onaylÄ±yor musunuz?',
             style: TextStyle(
               fontWeight: FontWeight.w900,
             ),
@@ -1278,11 +1302,11 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 'Tutar: ${value.toStringAsFixed(2)} TL',
               ),
               Text(
-                'Ödeme: $payment',
+                'Ã–deme: $payment',
               ),
-              if (payment == 'Borç')
+              if (payment == 'BorÃ§')
                 Text(
-                  'Borçlu: ${debtor.text.trim()}',
+                  'BorÃ§lu: ${debtor.text.trim()}',
                 ),
             ],
           ),
@@ -1294,7 +1318,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 false,
               ),
               child: Text(
-                'İptal Et',
+                'Ä°ptal Et',
                 style: TextStyle(
                   color: darkTheme
                       ? Colors.white
@@ -1334,7 +1358,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 .toString(),
         amount: value,
         payment: payment,
-        debtor: payment == 'Borç'
+        debtor: payment == 'BorÃ§'
             ? debtor.text.trim()
             : null,
         note: note.text.trim().isEmpty
@@ -1375,7 +1399,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
         title: Text(
           widget.trip == null
               ? 'Yeni Yolculuk'
-              : 'Yolculuğu Düzenle',
+              : 'YolculuÄŸu DÃ¼zenle',
         ),
       ),
       body: ListView(
@@ -1430,7 +1454,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Ödeme yöntemi',
+            'Ã–deme yÃ¶ntemi',
             style: TextStyle(
               fontWeight: FontWeight.w800,
             ),
@@ -1443,7 +1467,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
               'Nakit',
               'POS',
               'IBAN',
-              'Borç',
+              'BorÃ§',
             ].map((p) {
               final selected = payment == p;
 
@@ -1476,14 +1500,14 @@ class _AddTripScreenState extends State<AddTripScreen> {
               );
             }).toList(),
           ),
-          if (payment == 'Borç') ...[
+          if (payment == 'BorÃ§') ...[
             const SizedBox(height: 18),
             TextField(
               controller: debtor,
               textCapitalization:
                   TextCapitalization.words,
               decoration: const InputDecoration(
-                labelText: 'Borçlu adı',
+                labelText: 'BorÃ§lu adÄ±',
                 prefixIcon: Icon(
                   Icons.person_outline,
                 ),
@@ -1495,7 +1519,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
             controller: note,
             maxLines: 3,
             decoration: const InputDecoration(
-              labelText: 'Not (isteğe bağlı)',
+              labelText: 'Not (isteÄŸe baÄŸlÄ±)',
               prefixIcon: Icon(
                 Icons.notes_outlined,
               ),
@@ -1569,7 +1593,7 @@ class _TripsScreenState extends State<TripsScreen> {
             'Yolculuk silinsin mi?',
           ),
           content: const Text(
-            'Bu kayıt kalıcı olarak silinecek.',
+            'Bu kayÄ±t kalÄ±cÄ± olarak silinecek.',
           ),
           actions: [
             TextButton(
@@ -1578,7 +1602,7 @@ class _TripsScreenState extends State<TripsScreen> {
                 dialogContext,
                 false,
               ),
-              child: const Text('İptal'),
+              child: const Text('Ä°ptal'),
             ),
             FilledButton(
               onPressed: () =>
@@ -1654,13 +1678,13 @@ class _TripsScreenState extends State<TripsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Yolculukları düzenle / sil',
+          'YolculuklarÄ± dÃ¼zenle / sil',
         ),
       ),
       body: list.isEmpty
           ? const Center(
               child: Text(
-                'Bugün kayıt bulunmuyor.',
+                'BugÃ¼n kayÄ±t bulunmuyor.',
               ),
             )
           : ListView.builder(
@@ -1680,23 +1704,6 @@ class _TripsScreenState extends State<TripsScreen> {
             ),
     );
   }
-  String _date(DateTime d) {
-  return '${d.day.toString().padLeft(2, '0')}.'
-      '${d.month.toString().padLeft(2, '0')}.'
-      '${d.year}';
-}
-
-String _time(DateTime d) {
-  return '${d.hour.toString().padLeft(2, '0')}:'
-      '${d.minute.toString().padLeft(2, '0')}';
-}
-
-IconData _paymentIcon(String p) {
-  if (p == 'Nakit') return Icons.money_rounded;
-  if (p == 'POS') return Icons.credit_card_rounded;
-  if (p == 'IBAN') return Icons.account_balance_rounded;
-  return Icons.account_balance_wallet_rounded;
-}
 }
 
 class HistoryScreen extends StatefulWidget {
@@ -1779,13 +1786,13 @@ class _HistoryScreenState
           'Yolculuk silinsin mi?',
         ),
         content: const Text(
-          'Bu kayıt kalıcı olarak silinecek.',
+          'Bu kayÄ±t kalÄ±cÄ± olarak silinecek.',
         ),
         actions: [
           TextButton(
             onPressed: () =>
                 Navigator.pop(c, false),
-            child: const Text('İptal'),
+            child: const Text('Ä°ptal'),
           ),
           FilledButton(
             onPressed: () =>
@@ -1830,7 +1837,7 @@ class _HistoryScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Geçmiş Kayıtlar',
+          'GeÃ§miÅŸ KayÄ±tlar',
         ),
         actions: [
           IconButton(
@@ -1865,7 +1872,7 @@ class _HistoryScreenState
                     selected,
                     DateTime.now(),
                   )
-                      ? 'Bugün'
+                      ? 'BugÃ¼n'
                       : _date(selected),
                   style: const TextStyle(
                     color: Colors.black,
@@ -1875,7 +1882,7 @@ class _HistoryScreenState
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '${dayTrips.length} yolculuk • '
+                  '${dayTrips.length} yolculuk â€¢ '
                   '${total.toStringAsFixed(2)} TL',
                   style: const TextStyle(
                     color: Colors.black,
@@ -1890,7 +1897,7 @@ class _HistoryScreenState
               padding: EdgeInsets.all(30),
               child: Center(
                 child: Text(
-                  'Bu tarihte kayıt bulunmuyor.',
+                  'Bu tarihte kayÄ±t bulunmuyor.',
                 ),
               ),
             )
@@ -1907,57 +1914,6 @@ class _HistoryScreenState
       ),
     );
   }
-  Widget _tripCard(
-  Trip t, {
-  required VoidCallback onEdit,
-  required VoidCallback onDelete,
-  required bool showDate,
-}) {
-  final isDark =
-      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-          Brightness.dark;
-
-  return Container(
-    margin: const EdgeInsets.only(bottom: 8),
-    decoration: BoxDecoration(
-      color: isDark ? const Color(0xFFD9D9D9) : Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: gold),
-    ),
-    child: ListTile(
-      leading: CircleAvatar(
-        backgroundColor: gold.withOpacity(.18),
-        child: Icon(_paymentIcon(t.payment), color: dark),
-      ),
-      title: Text(
-        '${t.amount.toStringAsFixed(2)} TL • ${t.payment}',
-        style: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-      subtitle: Text(
-        '${showDate ? '${_date(t.createdAt)} • ' : ''}'
-        '${t.debtor != null ? 'Borçlu: ${t.debtor} • ' : ''}'
-        '${t.note != null ? 'Not: ${t.note} • ' : ''}'
-        '${_time(t.createdAt)}',
-        style: const TextStyle(color: Colors.black87),
-      ),
-      trailing: Wrap(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined, color: Colors.black),
-            onPressed: onEdit,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
-            onPressed: onDelete,
-          ),
-        ],
-      ),
-    ),
-  );
-}
 }
 class DebtsScreen extends StatefulWidget {
   final List<Trip> trips;
@@ -1985,7 +1941,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
 
     debts = widget.trips
         .where(
-          (t) => t.payment == 'Borç' && !t.paid,
+          (t) => t.payment == 'BorÃ§' && !t.paid,
         )
         .toList();
   }
@@ -2004,7 +1960,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
     setState(() {
       debts = widget.trips
           .where(
-            (x) => x.payment == 'Borç' && !x.paid,
+            (x) => x.payment == 'BorÃ§' && !x.paid,
           )
           .toList();
     });
@@ -2028,7 +1984,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Borçlar'),
+        title: const Text('BorÃ§lar'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(14),
@@ -2037,14 +1993,14 @@ class _DebtsScreenState extends State<DebtsScreen> {
             children: [
               Expanded(
                 child: _stat(
-                  'Aktif Borç',
+                  'Aktif BorÃ§',
                   '${debts.length}',
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: _stat(
-                  'Borçlu',
+                  'BorÃ§lu',
                   '$people',
                 ),
               ),
@@ -2063,7 +2019,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
               padding: EdgeInsets.all(30),
               child: Center(
                 child: Text(
-                  'Ödenmemiş borç bulunmuyor.',
+                  'Ã–denmemiÅŸ borÃ§ bulunmuyor.',
                 ),
               ),
             )
@@ -2093,7 +2049,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
                         children: [
                           Text(
                             t.debtor ??
-                                'İsimsiz borç',
+                                'Ä°simsiz borÃ§',
                             style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16,
@@ -2113,7 +2069,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            '${_date(t.createdAt)} • '
+                            '${_date(t.createdAt)} â€¢ '
                             '${_time(t.createdAt)}',
                             style: const TextStyle(
                               color: Colors.black87,
@@ -2138,7 +2094,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
                       ),
                       onPressed: () => _paid(t),
                       child: const Text(
-                        'Ödendi',
+                        'Ã–dendi',
                         style: TextStyle(
                           fontWeight:
                               FontWeight.w800,
