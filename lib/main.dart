@@ -1667,6 +1667,23 @@ class _TripsScreenState extends State<TripsScreen> {
             ),
     );
   }
+  String _date(DateTime d) {
+  return '${d.day.toString().padLeft(2, '0')}.'
+      '${d.month.toString().padLeft(2, '0')}.'
+      '${d.year}';
+}
+
+String _time(DateTime d) {
+  return '${d.hour.toString().padLeft(2, '0')}:'
+      '${d.minute.toString().padLeft(2, '0')}';
+}
+
+IconData _paymentIcon(String p) {
+  if (p == 'Nakit') return Icons.money_rounded;
+  if (p == 'POS') return Icons.credit_card_rounded;
+  if (p == 'IBAN') return Icons.account_balance_rounded;
+  return Icons.account_balance_wallet_rounded;
+}
 }
 
 class HistoryScreen extends StatefulWidget {
