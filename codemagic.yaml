@@ -14,6 +14,7 @@ workflows:
         script: |
           mkdir -p assets
           cp logo.png assets/logo.png
+          cp logo.png assets/icon.png
 
       - name: Flutter paketlerini yükle
         script: flutter pub get
