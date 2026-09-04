@@ -1871,6 +1871,57 @@ class _HistoryScreenState
       ),
     );
   }
+  Widget _tripCard(
+  Trip t, {
+  required VoidCallback onEdit,
+  required VoidCallback onDelete,
+  required bool showDate,
+}) {
+  final isDark =
+      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+          Brightness.dark;
+
+  return Container(
+    margin: const EdgeInsets.only(bottom: 8),
+    decoration: BoxDecoration(
+      color: isDark ? const Color(0xFFD9D9D9) : Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: gold),
+    ),
+    child: ListTile(
+      leading: CircleAvatar(
+        backgroundColor: gold.withOpacity(.18),
+        child: Icon(_paymentIcon(t.payment), color: dark),
+      ),
+      title: Text(
+        '${t.amount.toStringAsFixed(2)} TL • ${t.payment}',
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+      subtitle: Text(
+        '${showDate ? '${_date(t.createdAt)} • ' : ''}'
+        '${t.debtor != null ? 'Borçlu: ${t.debtor} • ' : ''}'
+        '${t.note != null ? 'Not: ${t.note} • ' : ''}'
+        '${_time(t.createdAt)}',
+        style: const TextStyle(color: Colors.black87),
+      ),
+      trailing: Wrap(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, color: Colors.black),
+            onPressed: onEdit,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            onPressed: onDelete,
+          ),
+        ],
+      ),
+    ),
+  );
+}
 }
 class DebtsScreen extends StatefulWidget {
   final List<Trip> trips;
