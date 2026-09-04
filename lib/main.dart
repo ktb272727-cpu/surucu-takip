@@ -1144,6 +1144,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  IconData _paymentIcon(String p) {
+  if (p == 'Nakit') return Icons.money_rounded;
+  if (p == 'POS') return Icons.credit_card_rounded;
+  if (p == 'IBAN') return Icons.account_balance_rounded;
+  return Icons.account_balance_wallet_rounded;
+  }
 }
 
 class AddTripScreen extends StatefulWidget {
